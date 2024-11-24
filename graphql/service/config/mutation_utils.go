@@ -13,6 +13,7 @@ import (
 	"sort"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/daeuniverse/dae-wing/common"
 	"github.com/daeuniverse/dae-wing/dae"
@@ -237,7 +238,7 @@ func Rename(ctx context.Context, _id graphql.ID, name string) (n int32, err erro
 
 var runLock sync.Mutex
 
-func Run(d *gorm.DB, noLoad bool) (n int32, err error) {
+func Run(d *gorm.DB, noLoad bool, isReload bool) (n int32, err error) {
 	if ok := runLock.TryLock(); !ok {
 		return 0, fmt.Errorf("the last request didn't complete; make a cup of tea and take a break")
 	}
@@ -272,7 +273,16 @@ func Run(d *gorm.DB, noLoad bool) (n int32, err error) {
 	var mConfig db.Config
 	var mDns db.Dns
 	var mRouting db.Routing
-	q := d.Model(&db.Config{}).Where("selected = ?", true).First(&mConfig)
+	var mSystem db.System
+
+	q := d.Model(&db.System{}).First(&mSystem)
+	if (q.Error == nil && q.RowsAffected == 0) || errors.Is(q.Error, gorm.ErrRecordNotFound) {
+		return 0, fmt.Errorf("please select a config")
+	}
+	if q.Error != nil {
+		return 0, q.Error
+	}
+	q = d.Model(&db.Config{}).Where("selected = ?", true).First(&mConfig)
 	if (q.Error == nil && q.RowsAffected == 0) || errors.Is(q.Error, gorm.ErrRecordNotFound) {
 		return 0, fmt.Errorf("please select a config")
 	}
@@ -418,6 +428,17 @@ func Run(d *gorm.DB, noLoad bool) (n int32, err error) {
 		}
 		c.Group = append(c.Group, grp)
 	}
+	var reload = false
+	for _, node := range nodes {
+		if node.dbNode.UpdatedAt.Sub(mSystem.RunningAt) > 0 {
+			reload = true
+		}
+	}
+
+	if mSystem.Running && isReload && !reload {
+		return
+	}
+
 	// Fill in node section.
 	for _, node := range nodes {
 		c.Node = append(c.Node, daeConfig.KeyableString(fmt.Sprintf("%v:%v", node.uniqueName, node.dbNode.Link)))
@@ -450,6 +471,7 @@ func Run(d *gorm.DB, noLoad bool) (n int32, err error) {
 	})
 	if err = d.Model(&sys).Updates(map[string]interface{}{
 		"running":                   true,
+		"running_at":                time.Now(),
 		"running_config_id":         mConfig.ID,
 		"running_config_version":    mConfig.Version,
 		"running_dns_id":            mDns.ID,

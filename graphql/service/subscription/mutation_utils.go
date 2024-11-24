@@ -191,18 +191,7 @@ func Update(ctx context.Context, _id graphql.ID) (r *Resolver, err error) {
 			tx.Rollback()
 		}
 	}()
-	// Remove those nodes whose subscription are independent from any groups.
-	subQuery := tx.Raw(`select nodes.id as id
-                from nodes
-                inner join group_nodes on group_nodes.node_id = nodes.id
-                where subscription_id = ?`, subId)
 
-	if err = tx.Where("subscription_id = ?", subId).
-		Where("id not in (?)", subQuery).
-		Select(clause.Associations).
-		Delete(&db.Node{}).Error; err != nil {
-		return nil, err
-	}
 	// Import node links.
 	var args []*internal.ImportArgument
 	for _, link := range links {

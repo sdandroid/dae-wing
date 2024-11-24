@@ -256,7 +256,7 @@ func (r *MutationResolver) Run(args *struct {
 	Dry bool
 }) (int32, error) {
 	tx := db.BeginTx(context.TODO())
-	ret, err := config.Run(tx, args.Dry)
+	ret, err := config.Run(tx, args.Dry, true)
 	if err != nil {
 		tx.Rollback()
 		return 0, err
