@@ -15,7 +15,7 @@ type Node struct {
 	Protocol string `gorm:"not null"`
 
 	Tag       *string   `gorm:"unique"`
-	UpdatedAt time.Time `gorm:"not null"`
+	UpdatedAt time.Time `gorm:"null"`
 
 	// Foreign keys.
 	// Nil SubscriptionID indicates nodes belonging to no subscription.
