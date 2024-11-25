@@ -9,6 +9,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/sirupsen/logrus"
 	"reflect"
 	"sort"
 	"strings"
@@ -430,14 +431,17 @@ func Run(d *gorm.DB, noLoad bool, isReload bool) (n int32, err error) {
 	}
 	var reload = false
 	for _, node := range nodes {
-		if node.dbNode.UpdatedAt.Sub(mSystem.RunningAt) > 0 {
+		if node.dbNode.UpdatedAt.After(mSystem.RunningAt) {
 			reload = true
 		}
 	}
 
-	if mSystem.Running && isReload && !reload {
+	if isReload && !reload {
+		logrus.Debugln("node no change  no need to reload")
 		return
 	}
+
+	logrus.Debugln("dae config reload")
 
 	// Fill in node section.
 	for _, node := range nodes {
