@@ -1,0 +1,141 @@
+Subject: [PATCH] update
+---
+Index: libcron/Makefile
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/libcron/Makefile b/libcron/Makefile
+new file mode 100644
+--- /dev/null	(date 1731895527414)
++++ b/libcron/Makefile	(date 1731895527414)
+@@ -0,0 +1,47 @@
++
++# SPDX-License-Identifier: GPL-3.0-only
++#
++# Copyright (C) 2021 ImmortalWrt.org
++
++include $(TOPDIR)/rules.mk
++
++PKG_NAME:=libcron
++PKG_RELEASE:=1
++
++PKG_SOURCE_PROTO:=git
++PKG_SOURCE_URL:=https://github.com/PerMalmberg/libcron.git
++PKG_SOURCE_DATE:=2023-11-14
++PKG_SOURCE_VERSION:=41f238ceb09d4179e7346d78584a0c978e5d0059
++PKG_MIRROR_HASH:=c7b0651566153b1d641e3b5ece50474c8556d42345779f19a5f22814a8183c38
++
++PKG_LICENSE:=MIT
++PKG_LICENSE_FILES:=LICENSE
++PKG_MAINTAINER:=Tianling Shen <cnsztl@immortalwrt.org>
++
++PKG_BUILD_PARALLEL:=1
++CMAKE_INSTALL:=1
++
++include $(INCLUDE_DIR)/package.mk
++include $(INCLUDE_DIR)/cmake.mk
++
++define Package/libcron
++  SECTION:=lib
++  CATEGORY:=Libraries
++  URL:=https://github.com/PerMalmberg/libcron
++  TITLE:=A C++ scheduling library using cron formatting
++  DEPENDS:=+libstdcpp
++endef
++
++define Package/libcron/description
++  Libcron offers an easy to use API to add callbacks with corresponding
++  cron-formatted strings.
++endef
++
++CMAKE_OPTIONS+= -DBUILD_SHARED_LIBS=ON
++
++define Package/libcron/install
++	$(INSTALL_DIR) $(1)/usr/lib/
++	$(CP) $(PKG_INSTALL_DIR)/usr/lib/liblibcron.so $(1)/usr/lib/
++endef
++
++$(eval $(call BuildPackage,libcron))
+Index: daed/Makefile
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/daed/Makefile b/daed/Makefile
+--- a/daed/Makefile	(revision c6d010f8d22be4605e86de2c06a8831e5affd1a0)
++++ b/daed/Makefile	(date 1732845919161)
+@@ -7,7 +7,7 @@
+ PKG_NAME:=daed
+ PKG_VERSION:=b44c472
+ DAED_VERSION:=daed-b44c472
+-WING_VERSION:=wing-c4c7159
++WING_VERSION:=wing-126706d
+ CORE_VERSION:=core-d3ab0b2
+ PKG_RELEASE:=1
+ 
+@@ -70,14 +70,13 @@
+ define Build/Prepare
+ 	( \
+ 		$(TAR) --strip-components=1 -C $(PKG_BUILD_DIR)/../ -xzf $(DL_DIR)/$(PKG_NAME)-$(PKG_VERSION).tar.gz ; \
+-		rm -rf $(PKG_BUILD_DIR) && git clone https://github.com/daeuniverse/dae-wing $(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)/wing && git -C $(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)/wing checkout ${WING_VERSION: -7} ; \
++		rm -rf $(PKG_BUILD_DIR) && git clone https://github.com/sdandroid/dae-wing $(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)/wing && git -C $(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)/wing checkout ${WING_VERSION: -7} ; \
+ 		rm -rf $(PKG_BUILD_DIR)/dae-core && git clone https://github.com/daeuniverse/dae $(PKG_BUILD_DIR)/dae-core && git -C $(PKG_BUILD_DIR)/dae-core checkout ${CORE_VERSION: -7} ; \
+ 		pushd $(PKG_BUILD_DIR)/dae-core ; \
+ 		git submodule update --init ; \
+ 		go mod tidy ; \
+ 		popd ; \
+ 		pushd $(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)/wing ; \
+-		wget -qO - https://github.com/daeuniverse/dae-wing/commit/ca02961.patch | patch -p1 ; \
+ 		go mod tidy ; \
+ 		popd ; \
+ 		pushd $(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION) ; \
+Index: luci-app-daed/root/etc/daed/daed_sub.sh
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/luci-app-daed/root/etc/daed/daed_sub.sh b/luci-app-daed/root/etc/daed/daed_sub.sh
+--- a/luci-app-daed/root/etc/daed/daed_sub.sh	(revision c6d010f8d22be4605e86de2c06a8831e5affd1a0)
++++ b/luci-app-daed/root/etc/daed/daed_sub.sh	(date 1732522145170)
+@@ -23,7 +23,7 @@
+ }
+ 
+ reload() {
+-	curl -X POST -H "Authorization: $TOKEN" -d '{"query":"mutation Run($dry: Boolean!) {\n  run(dry: $dry)\n}","variables":{"dry":false},"operationName":"Run"}' $GRAPHQL_URL
++	curl -X POST -H "Authorization: $TOKEN" -d '{"query":"mutation RunForSubscription($dry: Boolean!) {\n  runForSubscription(dry: $dry)\n}","variables":{"dry":false},"operationName":"RunForSubscription"}' $GRAPHQL_URL
+ }
+ 
+ resetcron() {
+@@ -33,4 +33,4 @@
+   crontab $CRON_FILE
+ }
+ 
+-login && update_subscription && reload && resetcron
++login && update_subscription && reload
+Index: luci-app-daed/root/etc/init.d/luci_daed
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/luci-app-daed/root/etc/init.d/luci_daed b/luci-app-daed/root/etc/init.d/luci_daed
+--- a/luci-app-daed/root/etc/init.d/luci_daed	(revision c6d010f8d22be4605e86de2c06a8831e5affd1a0)
++++ b/luci-app-daed/root/etc/init.d/luci_daed	(date 1732522163923)
+@@ -28,16 +28,10 @@
+   config_load "$CONF"
+ 
+   local enabled
+-  config_get_bool enabled "config" "enabled" "0"
+-  if [ "$enabled" -eq 0 ]; then
+-    delcron
+-    return 1
+-  fi
+-  setcron
++
+ }
+ 
+ stop_service() {
+-  delcron
+ }
+ 
+ service_triggers() {
