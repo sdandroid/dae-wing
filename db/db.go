@@ -36,6 +36,7 @@ func InitDatabase(configDir string) (err error) {
 	if err != nil {
 		return fmt.Errorf("%w: %v", err, path)
 	}
+	db.Exec("PRAGMA journal_mode=WAL;")
 	if err = db.AutoMigrate(
 		&User{},
 		&Config{},
