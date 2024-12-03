@@ -1,14 +1,32 @@
-Subject: [PATCH] update
----
-Index: libcron/Makefile
-IDEA additional info:
-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
-<+>UTF-8
-===================================================================
-diff --git a/libcron/Makefile b/libcron/Makefile
-new file mode 100644
---- /dev/null	(date 1733190983166)
-+++ b/libcron/Makefile	(date 1733190983166)
+--- a/daed/Makefile
++++ b/daed/Makefile
+@@ -7,7 +7,7 @@ include $(TOPDIR)/rules.mk
+ PKG_NAME:=daed
+ PKG_VERSION:=2024.11.27
+ DAED_VERSION:=daed-b44c472
+-WING_VERSION:=wing-c4c7159
++WING_VERSION:=wing-93d987c
+ CORE_VERSION:=core-aea92a0
+ PKG_RELEASE:=1
+ 
+@@ -70,14 +70,13 @@ endef
+ define Build/Prepare
+ 	( \
+ 		$(TAR) --strip-components=1 -C $(PKG_BUILD_DIR)/../ -xzf $(DL_DIR)/$(PKG_NAME)-$(PKG_VERSION).tar.gz ; \
+-		rm -rf $(PKG_BUILD_DIR) && git clone https://github.com/daeuniverse/dae-wing $(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)/wing && git -C $(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)/wing checkout ${WING_VERSION: -7} ; \
++		rm -rf $(PKG_BUILD_DIR) && git clone https://github.com/sdandroid/dae-wing $(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)/wing && git -C $(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)/wing checkout ${WING_VERSION: -7} ; \
+ 		rm -rf $(PKG_BUILD_DIR)/dae-core && git clone https://github.com/daeuniverse/dae $(PKG_BUILD_DIR)/dae-core && git -C $(PKG_BUILD_DIR)/dae-core checkout ${CORE_VERSION: -7} ; \
+ 		pushd $(PKG_BUILD_DIR)/dae-core ; \
+ 		git submodule update --init ; \
+ 		go mod tidy ; \
+ 		popd ; \
+ 		pushd $(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)/wing ; \
+-		wget -qO - https://github.com/daeuniverse/dae-wing/commit/ca02961.patch | patch -p1 ; \
+ 		go mod tidy ; \
+ 		popd ; \
+ 		pushd $(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION) ; \
+--- /dev/null
++++ b/libcron/Makefile
 @@ -0,0 +1,47 @@
 +
 +# SPDX-License-Identifier: GPL-3.0-only
@@ -57,48 +75,9 @@ new file mode 100644
 +endef
 +
 +$(eval $(call BuildPackage,libcron))
-Index: daed/Makefile
-IDEA additional info:
-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
-<+>UTF-8
-===================================================================
-diff --git a/daed/Makefile b/daed/Makefile
---- a/daed/Makefile	(revision b2d6fc39273de6b8d18766c0d734877b93e8ed57)
-+++ b/daed/Makefile	(date 1733191027863)
-@@ -7,7 +7,7 @@
- PKG_NAME:=daed
- PKG_VERSION:=2024.11.27
- DAED_VERSION:=daed-b44c472
--WING_VERSION:=wing-c4c7159
-+WING_VERSION:=wing-93d987c
- CORE_VERSION:=core-aea92a0
- PKG_RELEASE:=1
- 
-@@ -70,14 +70,13 @@
- define Build/Prepare
- 	( \
- 		$(TAR) --strip-components=1 -C $(PKG_BUILD_DIR)/../ -xzf $(DL_DIR)/$(PKG_NAME)-$(PKG_VERSION).tar.gz ; \
--		rm -rf $(PKG_BUILD_DIR) && git clone https://github.com/daeuniverse/dae-wing $(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)/wing && git -C $(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)/wing checkout ${WING_VERSION: -7} ; \
-+		rm -rf $(PKG_BUILD_DIR) && git clone https://github.com/sdandroid/dae-wing $(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)/wing && git -C $(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)/wing checkout ${WING_VERSION: -7} ; \
- 		rm -rf $(PKG_BUILD_DIR)/dae-core && git clone https://github.com/daeuniverse/dae $(PKG_BUILD_DIR)/dae-core && git -C $(PKG_BUILD_DIR)/dae-core checkout ${CORE_VERSION: -7} ; \
- 		pushd $(PKG_BUILD_DIR)/dae-core ; \
- 		git submodule update --init ; \
- 		go mod tidy ; \
- 		popd ; \
- 		pushd $(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)/wing ; \
--		wget -qO - https://github.com/daeuniverse/dae-wing/commit/ca02961.patch | patch -p1 ; \
- 		go mod tidy ; \
- 		popd ; \
- 		pushd $(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION) ; \
-Index: luci-app-daed/root/etc/daed/daed_sub.sh
-IDEA additional info:
-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
-<+>UTF-8
-===================================================================
-diff --git a/luci-app-daed/root/etc/daed/daed_sub.sh b/luci-app-daed/root/etc/daed/daed_sub.sh
---- a/luci-app-daed/root/etc/daed/daed_sub.sh	(revision b2d6fc39273de6b8d18766c0d734877b93e8ed57)
-+++ b/luci-app-daed/root/etc/daed/daed_sub.sh	(date 1733190983170)
-@@ -23,7 +23,7 @@
+--- a/luci-app-daed/root/etc/daed/daed_sub.sh
++++ b/luci-app-daed/root/etc/daed/daed_sub.sh
+@@ -23,7 +23,7 @@ update_subscription() {
  }
  
  reload() {
@@ -107,32 +86,20 @@ diff --git a/luci-app-daed/root/etc/daed/daed_sub.sh b/luci-app-daed/root/etc/da
  }
  
  resetcron() {
-@@ -33,4 +33,4 @@
+@@ -33,4 +33,4 @@ resetcron() {
    crontab $CRON_FILE
  }
  
 -login && update_subscription && reload && resetcron
 +login && update_subscription && reload
-Index: luci-app-daed/root/etc/init.d/luci_daed
-IDEA additional info:
-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
-<+>UTF-8
-===================================================================
-diff --git a/luci-app-daed/root/etc/init.d/luci_daed b/luci-app-daed/root/etc/init.d/luci_daed
---- a/luci-app-daed/root/etc/init.d/luci_daed	(revision b2d6fc39273de6b8d18766c0d734877b93e8ed57)
-+++ b/luci-app-daed/root/etc/init.d/luci_daed	(date 1733191144590)
-@@ -15,12 +15,12 @@
+--- a/luci-app-daed/root/etc/init.d/luci_daed
++++ b/luci-app-daed/root/etc/init.d/luci_daed
+@@ -14,7 +14,7 @@ RANDOM_NUM=$((RANDOM_SEED % 10 + 1))
+ setcron() {
    touch $CRON_FILE
    sed -i '/daed_sub.sh/d' $CRON_FILE 2>/dev/null
-   [ "$(uci -q get daed.config.subscribe_auto_update)" -eq 1 ] && echo "${RANDOM_NUM} $(uci -q get daed.config.subscribe_update_day_time) * * $(uci -q get daed.config.subscribe_update_week_time) /etc/daed/daed_sub.sh >/dev/null 2>&1" >>$CRON_FILE
--  crontab $CRON_FILE
-+  #crontab $CRON_FILE
+-  [ "$(uci -q get daed.config.subscribe_auto_update)" -eq 1 ] && echo "${RANDOM_NUM} $(uci -q get daed.config.subscribe_update_day_time) * * $(uci -q get daed.config.subscribe_update_week_time) /etc/daed/daed_sub.sh >/dev/null 2>&1" >>$CRON_FILE
++  [ "$(uci -q get daed.config.subscribe_auto_update)" -eq 1 ] && echo "*/1 * * * * /etc/daed/daed_sub.sh >/dev/null 2>&1" >>$CRON_FILE
+   crontab $CRON_FILE
  }
  
- delcron() {
-   sed -i '/daed_sub.sh/d' $CRON_FILE 2>/dev/null
--  crontab $CRON_FILE
-+  #crontab $CRON_FILE
- }
- 
- start_service() {
