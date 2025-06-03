@@ -7,16 +7,16 @@ package dae
 
 import (
 	"fmt"
-	"github.com/daeuniverse/dae/common/netutils"
-	"github.com/daeuniverse/outbound/protocol/direct"
 	"net/netip"
 	"runtime"
 	"sync"
 
+	"github.com/daeuniverse/dae/common/netutils"
 	daeConfig "github.com/daeuniverse/dae/config"
 	"github.com/daeuniverse/dae/control"
 	"github.com/daeuniverse/dae/pkg/config_parser"
 	"github.com/daeuniverse/dae/pkg/logger"
+	"github.com/daeuniverse/outbound/protocol/direct"
 	"github.com/mohae/deepcopy"
 	"github.com/sirupsen/logrus"
 )
@@ -215,9 +215,9 @@ func newControlPlane(log *logrus.Logger, bpf interface{}, dnsCache map[string]*c
 	// Deep copy to prevent modification.
 	conf = deepcopy.Copy(conf).(*daeConfig.Config)
 
-	/// Init Direct Dialers.
-	direct.InitDirectDialers(conf.Global.FallbackResovler)
-	netutils.FallbackDns = netip.MustParseAddrPort(conf.Global.FallbackResovler)
+	// Init Direct Dialers.
+	direct.InitDirectDialers(conf.Global.FallbackResolver)
+	netutils.FallbackDns = netip.MustParseAddrPort(conf.Global.FallbackResolver)
 
 	if !conf.Global.DisableWaitingNetwork && len(conf.Global.WanInterface) > 0 {
 		// Wait for network for WAN ready.

@@ -6,6 +6,7 @@ toolchain go1.23.6
 
 require (
 	github.com/daeuniverse/dae v0.2.0
+	github.com/daeuniverse/outbound v0.0.0-20250531131212-a58b4c6b39b2
 	github.com/glebarez/sqlite v1.8.0
 	github.com/golang-jwt/jwt/v5 v5.0.0
 	github.com/graph-gophers/graphql-go v1.5.1-0.20230228210639-f05ace9f4a41
@@ -41,7 +42,6 @@ require (
 	github.com/cilium/ebpf v0.15.0 // indirect
 	github.com/cloudflare/circl v1.3.9 // indirect
 	github.com/daeuniverse/dae-config-dist/go/dae_config v0.0.0-20230604120805-1c27619b592d // indirect
-	github.com/daeuniverse/outbound v0.0.0-20250501130119-88bbdbc0a58d // indirect
 	github.com/daeuniverse/quic-go v0.0.0-20250210145620-2083199a7851 // indirect
 	github.com/dgryski/go-camellia v0.0.0-20191119043421-69a8a13fb23d // indirect
 	github.com/dgryski/go-idea v0.0.0-20170306091226-d2fb45a411fb // indirect
@@ -78,7 +78,6 @@ require (
 	github.com/nxadm/tail v1.4.8 // indirect
 	github.com/okzk/sdnotify v0.0.0-20180710141335-d9becc38acbd // indirect
 	github.com/onsi/ginkgo/v2 v2.22.2 // indirect
-	github.com/panjf2000/ants/v2 v2.0.0 // indirect
 	github.com/pierrec/lz4/v4 v4.1.21 // indirect
 	github.com/power-devops/perfstat v0.0.0-20240221224432-82ca36839d55 // indirect
 	github.com/quic-go/qpack v0.5.1 // indirect
