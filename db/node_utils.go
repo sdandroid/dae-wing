@@ -7,6 +7,7 @@ package db
 
 import (
 	"strings"
+	"time"
 
 	"github.com/daeuniverse/dae-wing/common"
 	"github.com/daeuniverse/dae/component/outbound/dialer"
@@ -41,5 +42,6 @@ func NewNodeModel(link string, tag *string, subscriptionId *uint) (*Node, error)
 		Tag:            tag,
 		SubscriptionID: subscriptionId,
 		Subscription:   nil,
+		UpdatedAt:      time.Now(),
 	}, nil
 }

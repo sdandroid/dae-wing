@@ -34,17 +34,27 @@ func importNode(d *gorm.DB, subscriptionId *uint, arg *internal.ImportArgument) 
 	if err != nil {
 		return nil, err
 	}
-	var count int64
-	if err = d.Model(&db.Node{}).
-		Where("link = ?", arg.Link).
-		Where("subscription_id = ?", subscriptionId).Count(&count).Error; err != nil {
-		return nil, err
-	}
-	if count > 0 {
-		return nil, DuplicatedError
-	}
-	if err = d.Create(m).Error; err != nil {
-		return nil, err
+	var existsNode db.Node
+	d.Model(&db.Node{}).
+		Where("name = ?", m.Name).
+		Where("subscription_id = ?", subscriptionId).First(&existsNode)
+
+	if existsNode.ID > 0 {
+		if existsNode.Link != arg.Link {
+			newModel, err := db.NewNodeModel(arg.Link, nil, nil)
+			if err != nil {
+				return nil, err
+			}
+			q := d.Model(&db.Node{}).Where("name =? and subscription_id = ? ", m.Name, subscriptionId).Updates(newModel)
+			if err = q.Error; err != nil {
+				return nil, err
+			}
+		}
+
+	} else {
+		if err = d.Create(m).Error; err != nil {
+			return nil, err
+		}
 	}
 	return m, nil
 }

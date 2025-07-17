@@ -96,6 +96,9 @@ type Mutation {
 	# run proxy with selected config+dns+routing. Dry-run can be used to stop the proxy.
 	run(dry: Boolean!): Int! @hasRole(role: ADMIN)
 
+	# run proxy with selected config+dns+routing. Dry-run can be used to stop the proxy.
+	runForSubscription(dry: Boolean!): Int! @hasRole(role: ADMIN)
+
 	# importNodes is to import nodes with no subscription ID. rollbackError means abort the import on error.
 	importNodes(rollbackError: Boolean!, args: [ImportArgument!]!): [NodeImportResult!]! @hasRole(role: ADMIN)
 

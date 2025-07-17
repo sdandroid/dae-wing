@@ -115,3 +115,4 @@ require (
 replace github.com/daeuniverse/dae => ./dae-core
 
 // replace github.com/daeuniverse/dae => ../dae
+replace ekyu.moe/leb128 v0.0.0-20190626180622-d3722dc409a8 => github.com/Equim-chan/leb128 v0.0.0-20190626180622-d3722dc409a8

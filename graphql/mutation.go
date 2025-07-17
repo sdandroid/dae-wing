@@ -256,7 +256,20 @@ func (r *MutationResolver) Run(args *struct {
 	Dry bool
 }) (int32, error) {
 	tx := db.BeginTx(context.TODO())
-	ret, err := config.Run(tx, args.Dry)
+	ret, err := config.Run(tx, args.Dry, false)
+	if err != nil {
+		tx.Rollback()
+		return 0, err
+	}
+	tx.Commit()
+	return ret, nil
+}
+
+func (r *MutationResolver) RunForSubscription(args *struct {
+	Dry bool
+}) (int32, error) {
+	tx := db.BeginTx(context.TODO())
+	ret, err := config.Run(tx, args.Dry, true)
 	if err != nil {
 		tx.Rollback()
 		return 0, err
