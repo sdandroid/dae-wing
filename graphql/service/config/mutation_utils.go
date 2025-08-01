@@ -490,6 +490,6 @@ func Run(d *gorm.DB, noLoad bool, isReload bool) (n int32, err error) {
 	if err = d.Model(&sys).Association("RunningGroups").Replace(groups); err != nil {
 		return 0, err
 	}
-	d.Exec("PRAGMA wal_checkpoint(TRUNCATE);")
+	//d.Exec("PRAGMA wal_checkpoint(TRUNCATE);")
 	return 1, nil
 }
