@@ -12,6 +12,7 @@ import (
 	"fmt"
 	"io"
 	"strings"
+	"time"
 	"unicode"
 
 	"github.com/daeuniverse/dae-wing/db"
@@ -410,6 +411,9 @@ func (r *MutationResolver) ImportSubscription(args *struct {
 		return nil, err
 	}
 	tx.Commit()
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	subscription.UpdateAll(ctx)
 	return result, nil
 }
 
@@ -417,6 +421,21 @@ func (r *MutationResolver) UpdateSubscription(args *struct {
 	ID graphql.ID
 }) (*subscription.Resolver, error) {
 	return subscription.Update(context.TODO(), args.ID)
+}
+
+func (r *MutationResolver) UpdateSubscriptionLink(args *struct {
+	ID   graphql.ID
+	Link string
+}) (*subscription.Resolver, error) {
+	return subscription.UpdateLink(context.TODO(), args.ID, args.Link)
+}
+
+func (r *MutationResolver) UpdateSubscriptionCron(args *struct {
+	ID         graphql.ID
+	CronExp    string
+	CronEnable bool
+}) (*subscription.Resolver, error) {
+	return subscription.UpdateCron(context.TODO(), args.ID, args.CronExp, args.CronEnable)
 }
 
 func (r *MutationResolver) RemoveSubscriptions(args *struct {
