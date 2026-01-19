@@ -364,10 +364,31 @@ func Run(d *gorm.DB, noLoad bool, isReload bool) (n int32, err error) {
 		}
 		for _, n := range solitaryNodes {
 			n := n
-			nodes = append(nodes, &node{
-				dbNode: &n,
-				groups: []*db.Group{&groups[i]},
-			})
+			if strings.Contains(n.Name, "->") {
+				names := strings.Split(n.Name, "->")
+				links := make([]string, 0, len(names))
+				for _, name := range names {
+					var existsNode db.Node
+					if err := d.Model(&db.Node{}).
+						Where("name = ?", strings.TrimSpace(name)).
+						First(&existsNode).Error; err != nil {
+						logrus.WithError(err).Warnf("failed to find node: %s", name)
+						continue
+					}
+					links = append(links, existsNode.Link)
+				}
+				n.Link = strings.Join(links, "->")
+				nodes = append(nodes, &node{
+					dbNode: &n,
+					groups: []*db.Group{&groups[i]},
+				})
+			} else {
+				nodes = append(nodes, &node{
+					dbNode: &n,
+					groups: []*db.Group{&groups[i]},
+				})
+			}
+
 		}
 	}
 	nodes = deduplicateNodes(nodes)
