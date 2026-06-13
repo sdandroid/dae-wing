@@ -368,6 +368,7 @@ func Run(d *gorm.DB, noLoad bool, isReload bool) (n int32, err error) {
 			if strings.Contains(n.Name, "->") {
 				names := strings.Split(n.Name, "->")
 				links := make([]string, 0, len(names))
+				var updatedAt time.Time
 				for _, name := range names {
 					var existsNode db.Node
 					if err := d.Model(&db.Node{}).
@@ -376,14 +377,16 @@ func Run(d *gorm.DB, noLoad bool, isReload bool) (n int32, err error) {
 						logrus.WithError(err).Warnf("failed to find node: %s", name)
 						continue
 					}
+					if existsNode.UpdatedAt.After(updatedAt) {
+						updatedAt = existsNode.UpdatedAt
+					}
 					links = append(links, existsNode.Link)
-					nodes = append(nodes, &node{
-						dbNode: &existsNode,
-						groups: []*db.Group{&groups[i]},
-					})
 				}
 				n.Link = strings.Join(links, "->")
-				logrus.Infof("#################   chain link %s", n.Link)
+				if !updatedAt.IsZero() {
+					n.UpdatedAt = updatedAt
+				}
+				logrus.Infof("#################   chain link %s UpdateAt %v", n.Link, n.UpdatedAt)
 				nodes = append(nodes, &node{
 					dbNode: &n,
 					groups: []*db.Group{&groups[i]},
